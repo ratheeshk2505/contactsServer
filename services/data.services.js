@@ -9,7 +9,7 @@ const register = (pname, email, phone, dob, uname, pwrd)=>{
           statusCode:422,
           status:false,
           message:"Username Already Used, Use Different One"
-        }
+        }   
       }
       else{
         const newUser = new db.User({
@@ -51,7 +51,8 @@ const login = (uname, pwrd) => {
     })
   }
 
-  const saveContact = (uname, uId, fname, lname, email, phone, dob, label)=>{
+
+  const saveContact = (uname, uId, fname, lname, email, phone, dob, img, label)=>{
     return db.User.findOne({uname})
     .then(user=>{
       if(user){
@@ -59,13 +60,13 @@ const login = (uname, pwrd) => {
             const newContactdetail = new db.Contactdetail({
                 // uname, uId, fname, lname, email, phone, dob, imgPath, label
                 // userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, img:imgPath, label:label
-              userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, label:true
+              userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, img:img, label:true
             })
             newContactdetail.save()
           }
           else{
             const newContactdetail = new db.Contactdetail({
-              userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, label:false
+              userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, img:img, label:false
             })
             newContactdetail.save()
           }
@@ -101,6 +102,8 @@ const login = (uname, pwrd) => {
     })
   
   }
+
+ 
 
   const favContacts = (uId) => {
     return db.Contactdetail.find({"userId":uId, "label":true}).sort({"fname":1})
@@ -138,10 +141,10 @@ const login = (uname, pwrd) => {
     })
   }
 
-  const updateContact = (uId, eId, fname, lname, email, phone, dob, label) => {
+  const updateContact = (uId, eId, fname, lname, email, phone, dob, img, label) => {
     return db.Contactdetail.updateOne(
       {"userId":uId, _id:eId},
-      { $set: {"fname":fname, "lname":lname, "email":email, "phone":phone, "dob":dob, "label":label }}
+      { $set: {"fname":fname, "lname":lname, "email":email, "phone":phone, "dob":dob, "img":img, "label":label }}
       )
     .then(user=>{
       if(user){
@@ -158,7 +161,7 @@ const login = (uname, pwrd) => {
     return db.Contactdetail.deleteOne({"userId":uId, _id:eId})
     .then(user=>{
       if(user){
-        console.log("found");
+        console.log(`delete called, match found, deleted the contact`);
         return {
           statusCode:200,
           status:true,
@@ -167,7 +170,6 @@ const login = (uname, pwrd) => {
       }
     })
   }
-
 
 module.exports={
     register, login, saveContact, showContacts, favContacts, updateCall, updateContact, deleteContact

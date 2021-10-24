@@ -20,4 +20,5 @@ const Contactdetail = mongoose.model('Contactdetail',{
     label:Boolean,
 })
 
+
 module.exports={ User, Contactdetail } 

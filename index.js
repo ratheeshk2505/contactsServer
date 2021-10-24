@@ -2,14 +2,24 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const dataServices = require('./services/data.services')
 const cors = require('cors')
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer')
+const port = 3000;
 
 const app = express()
 app.use(express.json())
+app.use(errHandler);
+app.use(express.static('./images'))
+app.use('/image', express.static('./images'));
+
 
 app.use(cors({
     origin:'http://localhost:4200',
     credentials:true
 }))
+
+
 
 const jwtMiddleWare = (req,res,next)=>{
     try{
@@ -41,7 +51,7 @@ app.post('/login', (req,res)=>{
 })
 
 app.post('/save', jwtMiddleWare, (req,res)=>{
-    dataServices.saveContact(req.body.uname, req.body.uId, req.body.fname, req.body.lname, req.body.email, req.body.phone, req.body.dob, req.body.label).then(result=>{
+    dataServices.saveContact(req.body.uname, req.body.uId, req.body.fname, req.body.lname, req.body.email, req.body.phone, req.body.dob, req.body.img, req.body.label).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
@@ -58,6 +68,7 @@ app.post('/fav', jwtMiddleWare, (req,res)=>{
     })
 })
 
+
 app.post('/update', jwtMiddleWare, (req,res)=>{
     dataServices.updateCall(req.body.uId, req.body.eId).then(result=>{
         res.status(result.statusCode).json(result)
@@ -65,7 +76,7 @@ app.post('/update', jwtMiddleWare, (req,res)=>{
 })
 
 app.post('/updatecontact', jwtMiddleWare, (req,res)=>{
-    dataServices.updateContact(req.body.uId, req.body.eId, req.body.fname, req.body.lname, req.body.email, req.body.phone, req.body.dob, req.body.label).then(result=>{
+    dataServices.updateContact(req.body.uId, req.body.eId, req.body.fname, req.body.lname, req.body.email, req.body.phone, req.body.dob, req.body.img, req.body.label).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
@@ -76,6 +87,68 @@ app.post('/delete', jwtMiddleWare, (req,res)=>{
     })
 })
 
-app.listen(3000, ()=>{
-    console.log("server started")
+const storage = multer.diskStorage({
+    destination: './images',
+    filename: (req, file, cb) => {
+      return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
+    }
+  });
+  
+const uploadImg = multer({ 
+    storage: storage, 
+    limits: {fileSize: 200*1024}, // 200 Kb limit
+    fileFilter: function(req, file, cb){
+        checkFileType(file, cb)
+    }
+    }).single('img');
+
+ function checkFileType(file, cb){
+    const filetypes = /jpg|png|gif|jpeg/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
+    const mimetype = filetypes.test(file.mimetype)
+    if(mimetype && extname){
+        return cb(null, true)
+    }
+    else{
+        cb("Error: Images Only")
+    }
+ }
+
+ function errHandler(err, req, res, next) {
+    if (err instanceof multer.MulterError) {
+        res.json({
+            success: 0,
+            message: err.message
+        })
+    }
+}
+
+app.post('/upload', (req,res)=>{
+    uploadImg(req, res, (err)=>{
+        if(err){
+            res.status(422).json({
+                statusCode:422,
+                status:false,
+                message:"File Too Large (Max: 200 KB) / Not a Image File"
+            })
+        }
+        else{
+            res.status(200).json({ 
+                statusCode:200,
+                status:true,
+                imgurl: `http://localhost:3000/image/${req.file.filename}`})
+        }
+    })
+})
+
+app.post('/contactimg', jwtMiddleWare, (req,res)=>{
+    res.json({
+        statusCode:200,
+        status:true,
+        imgurl:"http://localhost:3000/image/contactImage.png"})
+})
+
+
+app.listen(port, ()=>{
+    console.log(`server started ${port}`)
 })
