@@ -1,5 +1,14 @@
 const mongoose = require("mongoose")
-mongoose.connect('mongodb://localhost:27017/contacts',{useNewUrlParser:true})
+
+const URI = 'mongodb+srv://adminC:adminC123@contactbook.xahr3.mongodb.net/contacts?retryWrites=true&w=majority';
+mongoose.connect(URI, {
+        useNewUrlParser:true,
+        useUnifiedTopology:true
+        }
+    )
+    console.log('MongoDB Atlas Connected');
+
+// mongoose.connect('mongodb://localhost:27017/contacts',{useNewUrlParser:true})
 const User = mongoose.model('User',{
     pname:String,
     email:String,
