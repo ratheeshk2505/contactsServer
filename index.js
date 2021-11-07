@@ -2,16 +2,18 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const dataServices = require('./services/data.services')
 const cors = require('cors')
-const fs = require('fs');
 const path = require('path');
 const multer = require('multer')
-const port = 3000;
+const port = process.env.port || 8080;
+// console.log(port);
+const baseUrl = `http://localhost:${port}/`
 
 const app = express()
 app.use(express.json())
 app.use(errHandler);
-app.use(express.static('./images'))
-app.use('/image', express.static('./images'));
+app.use(express.static(__dirname + "/images"))
+app.use(express.static(__dirname + "/dist"))
+app.use('/image', express.static(__dirname + "/images"));
 
 
 app.use(cors({
@@ -25,7 +27,7 @@ const jwtMiddleWare = (req,res,next)=>{
     try{
         const token = req.headers["x-token"]
         const data = jwt.verify(token,'supersecretkey123')
-        console.log(data)
+        // console.log(data)
         next()
     }
     catch{
@@ -136,7 +138,7 @@ app.post('/upload', (req,res)=>{
             res.status(200).json({ 
                 statusCode:200,
                 status:true,
-                imgurl: `http://localhost:3000/image/${req.file.filename}`})
+                imgurl: `${baseUrl}image/${req.file.filename}`})
         }
     })
 })
@@ -145,10 +147,10 @@ app.post('/contactimg', jwtMiddleWare, (req,res)=>{
     res.json({
         statusCode:200,
         status:true,
-        imgurl:"http://localhost:3000/image/contactImage.png"})
+        imgurl:`${baseUrl}image/contactImage.png`})
 })
 
 
 app.listen(port, ()=>{
-    console.log(`server started ${port}`)
+    console.log(`server started at ${port}`)
 })

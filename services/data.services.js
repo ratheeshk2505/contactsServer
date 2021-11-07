@@ -33,7 +33,7 @@ const login = (uname, pwrd) => {
         return{
           statusCode:200,
           status:true,
-          message:"Login Successfull.",
+          message:"Login Successful.",
           token,
           currUser:user.pname,
           currUserName:user.uname,
@@ -58,8 +58,6 @@ const login = (uname, pwrd) => {
       if(user){
           if(label){
             const newContactdetail = new db.Contactdetail({
-                // uname, uId, fname, lname, email, phone, dob, imgPath, label
-                // userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, img:imgPath, label:label
               userId:uId, fname:fname, lname:lname, email:email, phone:phone, dob:dob, img:img, label:true
             })
             newContactdetail.save()
@@ -84,6 +82,7 @@ const login = (uname, pwrd) => {
     return db.Contactdetail.find({"userId":uId}).sort({"fname":1})
     .then(user=>{
       if(user){
+        console.log(user);
         return {
           statusCode:200,
           status:true,
@@ -162,6 +161,7 @@ const login = (uname, pwrd) => {
     .then(user=>{
       if(user){
         console.log(`delete called, match found, deleted the contact`);
+        console.log(user);
         return {
           statusCode:200,
           status:true,
