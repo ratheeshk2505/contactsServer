@@ -4,12 +4,7 @@ const dataServices = require('./services/data.services')
 const cors = require('cors')
 const path = require('path');
 const multer = require('multer')
-<<<<<<< HEAD
 const port = process.env.PORT || 8080;
-=======
-const port = process.env.port || 8080;
-// console.log(port);
->>>>>>> 385d3eaf14b6c91665524a7229daa8f304afaf8a
 const baseUrl = `http://localhost:${port}/`
 const dotenv = require('dotenv');
 const { connectDb } = require('./services/db');
