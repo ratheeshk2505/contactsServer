@@ -4,9 +4,13 @@ const dataServices = require('./services/data.services')
 const cors = require('cors')
 const path = require('path');
 const multer = require('multer')
-const port = process.env.port || 8080;
-console.log(port);
+const port = process.env.PORT || 8080;
 const baseUrl = `http://localhost:${port}/`
+const dotenv = require('dotenv');
+const { connectDb } = require('./services/db');
+
+dotenv.config()
+connectDb()
 
 const app = express()
 app.use(express.json())
@@ -33,7 +37,7 @@ const jwtMiddleWare = (req,res,next)=>{
         const result = ({
             statusCode:401,
             status:false,
-            message:"Please Login to Transact..."
+            message:"Please Login to View & Create Contacts"
           })
           res.status(result.statusCode).json(result)
     }

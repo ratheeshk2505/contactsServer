@@ -1,12 +1,15 @@
 const mongoose = require("mongoose")
 
-const URI = 'mongodb+srv://adminC:adminC123@contactbook.xahr3.mongodb.net/contacts?retryWrites=true&w=majority';
-mongoose.connect(URI, {
-        useNewUrlParser:true,
-        useUnifiedTopology:true
-        }
-    )
-    console.log('MongoDB Atlas Connected');
+const connectDb = async () => {
+    try{
+        const connect = await mongoose.connect(process.env.MONGO_URI, {useNewUrlParser:true, useUnifiedTopology:true})
+        console.log(`mongoDB Atlas is connected to ${connect.connection.host}`);
+    }
+    catch(error){
+        console.log(`Error : ${error.message}`);
+        process.exit(1)
+    }
+}
 
 // mongoose.connect('mongodb://localhost:27017/contacts',{useNewUrlParser:true})
 const User = mongoose.model('User',{
@@ -30,4 +33,4 @@ const Contactdetail = mongoose.model('Contactdetail',{
 })
 
 
-module.exports={ User, Contactdetail } 
+module.exports={ User, Contactdetail, connectDb } 
