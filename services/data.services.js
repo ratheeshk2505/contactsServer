@@ -82,7 +82,7 @@ const login = (uname, pwrd) => {
     return db.Contactdetail.find({"userId":uId}).sort({"fname":1})
     .then(user=>{
       if(user){
-        console.log(user);
+        // console.log(user);
         return {
           statusCode:200,
           status:true,
